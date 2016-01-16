@@ -1,0 +1,25 @@
+{
+  "name": "muumiback",
+  "description": "backend for muumi game",
+  "main": "index.js",
+  "authors": [
+    "jviding <jasu.viding@helsinki.fi>"
+  ],
+  "license": "ISC",
+  "dependencies": {
+    "socket.io-client": "latest",
+    "phaser": "latest",
+    "hashmap": "latest"
+  },
+  "moduleType": [
+    "node"
+  ],
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
