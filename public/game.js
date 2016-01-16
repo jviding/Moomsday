@@ -32,9 +32,6 @@ var bg;
 
 function create() {
 
-    //create online players group
-    //allPlayers = game.add.group();
-
     game.physics.startSystem(Phaser.Physics.ARCADE);
 
     game.stage.backgroundColor = '#000000';
@@ -129,14 +126,11 @@ function update() {
     }
 
     //update players on the screen
-    allPlayers.forEach(function (item) {
-        item.destroy();
-    });
-    allPlayers = [];
-    allPlayersData.forEach(function (item) {
-        var p = game.add.sprite(item.x, item.y, 'dude');
-        allPlayers.push(p);
-    });
+    if (Date.now() - lastEmit > 100) {
+        for (var i=0; i<allPlayers.length; i++) {
+            allPlayers[i].reset(allPlayersData[i].x, allPlayersData[i].y);
+        }
+    }
 
     //location
     if (Date.now() - lastEmit > 100) {
@@ -154,8 +148,18 @@ function render () {
 
 }
 
-socket.on('get id', function (data) {
+socket.on('new player', function () {
+    console.log('a player joined');
+    var p = game.add.sprite(32,32,'dude');
+    allPlayers.push(p);
+});
+
+socket.on('get join', function (data) {
     socketId = data.id;
+    for (var i=data.players-1; i>0; i--) {
+        var p = game.add.sprite(32,32,'dude');
+        allPlayers.push(p);
+    }
 });
 
 socket.on('update', function (data) {
@@ -168,6 +172,6 @@ socket.on('update', function (data) {
 });
 
 socket.on('disconnected', function (data) {
-    //hashmap.get(data.id).sprite.destroy();
-    //hashmap.remove(data.id);
+    console.log('a player has left');
+    allPlayers.pop().destroy();
 });

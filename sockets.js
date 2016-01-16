@@ -4,12 +4,15 @@ var hashtable = new HashTable();
 module.exports = function Sockets(io) {
 
   io.on('connection', function (socket) {
+    
       //new user joins
       socket.on('join', function () {
         console.log('user connected');
-        hashtable.put(socket.id, {'id':socket.id, 'location': {'x': 32, 'y': 32}});
-        io.to(socket.id).emit('get id', {'id':socket.id});
+        hashtable.put(socket.id, {'id':socket.id, 'location': {'x': 0, 'y': 0}});
+        io.to(socket.id).emit('get join', {'id':socket.id, 'players':hashtable.size()});
+        socket.broadcast.emit('new player');
       });
+
       //player moves
       socket.on('player', function (data) {
         var moved = hashtable.get(socket.id);
@@ -19,6 +22,7 @@ module.exports = function Sockets(io) {
           hashtable.put(socket.id, moved);
         }
       });
+
       //update player locations
       setInterval(function() { 
         var players = {'players': []};
@@ -26,7 +30,8 @@ module.exports = function Sockets(io) {
           players.players.push(value);
         });
         io.emit('update', players);
-      }, 1000);
+      }, 100);
+
       //user disconnected
       socket.on('disconnect', function () {
         console.log('user disconnected');
