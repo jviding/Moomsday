@@ -1,5 +1,8 @@
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'phaser-game', 
-    { preload: preload, create: create, update: update, render: render });
+var game = new Phaser.Game(800, 600, Phaser.AUTO, "phaser-game", {
+    preload: preload,
+    create: create,
+    update: update
+}, false, false);
 
 var hashmap = new HashMap();
 var socket = io();
@@ -7,15 +10,17 @@ var socketId = null;
 var lastEmit = Date.now();
 
 function preload() {
-
-    game.load.tilemap('level1', 'assets/level1.json', null, Phaser.Tilemap.TILED_JSON);
-    game.load.image('tiles-1', 'assets/tiles-1.png');
-    game.load.spritesheet('dude', 'assets/dude.png', 32, 48);
-    game.load.spritesheet('droid', 'assets/droid.png', 32, 32);
-    game.load.image('starSmall', 'assets/star.png');
-    game.load.image('starBig', 'assets/star2.png');
-    game.load.image('background', 'assets/background2.png');
-
+    game.load.image('testiKuva', 'assets/img/shite.png');
+    game.load.image('laser', 'assets/img/laaseri.png');
+    game.load.tilemap('map', 'assets/maps/map.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.tilemap('map', 'assets/maps/map.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.spritesheet('player', 'assets/img/sankari.png', 23, 31);
+    game.load.spritesheet('tiles', 'assets/img/tilet.png', 32, 32);
+    game.load.spritesheet('tiles', 'assets/img/tilet.png', 32, 32);
+    game.load.spritesheet('moomins', 'assets/img/tyypit.png', 32, 32);
+    game.load.spritesheet('moomin_gibs', 'assets/img/muuminpalaset.png', 8, 8);
+    game.load.spritesheet('player_gibs', 'assets/img/muuminpalaset.png', 8, 8);
+    game.load.spritesheet('bullets', 'assets/img/bullets.png', 8, 4);
 }
 
 var map;
@@ -33,96 +38,62 @@ var bg;
 function create() {
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
+    game.stage.backgroundColor = '#55FFAA';
 
-    game.stage.backgroundColor = '#000000';
+    game.physics.arcade.gravity.y = 800;
+    game.world.height = 3000;
+    game.world.width = 1200;
 
-    bg = game.add.tileSprite(0, 0, 800, 600, 'background');
-    bg.fixedToCamera = true;
+    layer = loadMap(game);
+    player = new Player(32, 32, game);
+    moomies(game);
+    setPlayerGibs(game);
+    setCollisions(game, player);
 
-    map = game.add.tilemap('level1');
-
-    map.addTilesetImage('tiles-1');
-
-    map.setCollisionByExclusion([ 13, 14, 15, 16, 46, 47, 48, 49, 50, 51 ]);
-
-    layer = map.createLayer('Tile Layer 1');
-
-    //  Un-comment this on to see the collision tiles
-    // layer.debug = true;
-
-    layer.resizeWorld();
-
-    game.physics.arcade.gravity.y = 250;
-
-    player = game.add.sprite(32, 32, 'dude');
-    game.physics.enable(player, Phaser.Physics.ARCADE);
-
-    player.body.bounce.y = 0.2;
-    player.body.collideWorldBounds = true;
-    player.body.setSize(20, 32, 5, 16);
-
-    player.animations.add('left', [0, 1, 2, 3], 10, true);
-    player.animations.add('turn', [4], 20, true);
-    player.animations.add('right', [5, 6, 7, 8], 10, true);
-
-    game.camera.follow(player);
+    socket.emit('join');
 
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-
-    socket.emit('join');
+    dieButton = game.input.keyboard.addKey(Phaser.Keyboard.C);
 
 }
 
 function update() {
 
-    game.physics.arcade.collide(player, layer);
+    //game.physics.arcade.collide(game.lasers, game.mapLayer, game.laserMapOverlap, null, game);
+    //game.physics.arcade.overlap(game.lasers, game.moomins, game.laserMoominOverlap, null, game);
 
-    player.body.velocity.x = 0;
+    setCollisions(game, player, layer);
+
+    if (dieButton.isDown) {
+        player.die();
+    }
+
+    player.sprite.body.velocity.x = 0;
 
     if (cursors.left.isDown)
     {
-        player.body.velocity.x = -150;
-
-        if (facing != 'left')
-        {
-            player.animations.play('left');
-            facing = 'left';
-        }
+        player.sprite.animations.play("walk");
+        player.sprite.body.velocity.x = -400;
+        player.sprite.scale.x = -1;
+        player.direction = "left";
     }
     else if (cursors.right.isDown)
     {
-        player.body.velocity.x = 150;
-
-        if (facing != 'right')
-        {
-            player.animations.play('right');
-            facing = 'right';
-        }
+        player.sprite.animations.play("walk");
+        player.sprite.body.velocity.x = 400;
+        player.sprite.scale.x = 1;
+        player.direction = "right";
     }
     else
     {
-        if (facing != 'idle')
-        {
-            player.animations.stop();
-
-            if (facing == 'left')
-            {
-                player.frame = 0;
-            }
-            else
-            {
-                player.frame = 5;
-            }
-
-            facing = 'idle';
-        }
+        player.sprite.animations.play("idle");
+        player.sprite.body.velocity.x = 0;
     }
     
-    if (jumpButton.isDown && player.body.onFloor() && game.time.now > jumpTimer)
+    if (jumpButton.isDown && player.sprite.body.onFloor() && game.time.now > jumpTimer)
     {
-        player.body.velocity.y = -250;
-        jumpTimer = game.time.now + 750;
+        player.sprite.body.velocity.y = -280;
     }
 
     //update players on the screen
@@ -134,7 +105,7 @@ function update() {
 
     //location
     if (Date.now() - lastEmit > 100) {
-        socket.emit('player', {'x': player.x, 'y': player.y});
+        socket.emit('player', {'x': player.sprite.x, 'y': player.sprite.y});
         lastEmit = Date.now();
     }
 
@@ -150,14 +121,14 @@ function render () {
 
 socket.on('new player', function () {
     console.log('a player joined');
-    var p = game.add.sprite(32,32,'dude');
+    var p = game.add.sprite(32,32,'player');
     allPlayers.push(p);
 });
 
 socket.on('get join', function (data) {
     socketId = data.id;
     for (var i=data.players-1; i>0; i--) {
-        var p = game.add.sprite(32,32,'dude');
+        var p = game.add.sprite(32,32,'player');
         allPlayers.push(p);
     }
 });
