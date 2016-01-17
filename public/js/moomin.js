@@ -59,43 +59,93 @@ Moomin.prototype.update = function() {
         return;
     }
 
-        if (this.health <= 0) {
-            this.die();
-            return;
-        }
+    if (this.health <= 0 || this.y >= 2030) {
+        this.die();
+        return;
+    }
     
+    if (this.body.velocity.x !== 0) {
+        this.animations.play("walk");
+    } else {
+        this.animations.play("idle");
+    }
+
+    var state = game.state.getCurrentState();
+
+    if (this.direction === "right") {
+        this.scale.x = -1;
+    } else {
+        this.scale.x = 1;
+    }
+    
+    // Following
+    var yDistance = Math.abs(player.sprite.y - this.y);
+    var xDistance = Math.abs(player.sprite.x - this.x);
+
+    if (!player.dead && xDistance < 400 && yDistance < 150) {
+        this.wandering = false;
+        this.followTimer = game.time.now;
+        
+        if (player.sprite.x <= this.x) {
+            this.direction = "left";
+        } else {
+            this.direction = "right";
+        }
+
+        if (this.direction === "left") {
+            this.body.velocity.x = -80;
+        } else {
+            this.body.velocity.x = 80;
+        }
+
+        if (((this.body.blocked.left && this.direction === "left") ||
+             (this.body.blocked.right && this.direction === "right")) &&
+             this.body.blocked.down) {
+            this.body.velocity.y = -280;
+        }
+    } else {
+        // Keep moving for a while even if the player is lost
+        if (this.followTimer > game.time.now - 800) {
+            this.body.velocity.x = 0;
+            this.wandering = true;
+        }
+    }
+
+    if (this.wandering && game.time.now > this.wanderTimer + 1500) {
+        // If moomin was already moving, stop
         if (this.body.velocity.x !== 0) {
-            this.animations.play("walk");
+            this.body.velocity.x = 0;
+            this.wanderTimer = game.time.now + Math.ceil(Math.random() * 400);
+            return;
         } else {
-            this.animations.play("idle");
-        }
+            var randomNumber = Math.ceil(Math.random() * 2);
 
-        var state = game.state.getCurrentState();
-
-        if (this.direction === "right") {
-            this.scale.x = -1;
-        } else {
-            this.scale.x = 1;
-        }
-    
-        if (this.wandering && game.time.now > this.wanderTimer + 1500) {
-            // If moomin was already moving, stop
-            if (this.body.velocity.x !== 0) {
-                this.body.velocity.x = 0;
-                this.wanderTimer = game.time.now + Math.ceil(Math.random() * 400);
-                return;
-            } else {
-                var randomNumber = Math.ceil(Math.random() * 2);
-
-                if (randomNumber === 1) {
-                    this.body.velocity.x = 125 + Math.ceil(Math.random() * 50);
-                    this.wanderTimer = game.time.now + Math.ceil(Math.random() * 400) + 1200;
-                    this.direction = "right";
-                } else if (randomNumber === 2) {
-                    this.body.velocity.x = -125 - Math.ceil(Math.random() * 50);
-                    this.wanderTimer = game.time.now + Math.ceil(Math.random() * 400) + 1200;
-                    this.direction = "left";
-                }
+            if (randomNumber === 1) {
+                this.body.velocity.x = 125 + Math.ceil(Math.random() * 50);
+                this.wanderTimer = game.time.now + Math.ceil(Math.random() * 400) + 1200;
+                this.direction = "right";
+            } else if (randomNumber === 2) {
+                this.body.velocity.x = -125 - Math.ceil(Math.random() * 50);
+                this.wanderTimer = game.time.now + Math.ceil(Math.random() * 400) + 1200;
+                this.direction = "left";
             }
         }
+    }
+
+    // Shooting
+    /*if (!state.player.dead && this.enemyType === MUUMIPAPPA && game.time.now > this.gunTimer + 200 && yDistance < 80) {
+        var bullet = game.make.sprite(this.x, this.y, "bullets", 0);
+
+        state.enemyBullets.add(bullet);
+
+        bullet.body.allowGravity = false;
+
+        if (this.direction === "right") {
+            bullet.body.velocity.x = 800;
+        } else {
+            bullet.body.velocity.x = -800;
+        }
+
+        this.gunTimer = game.time.now;
+    }*/
 };

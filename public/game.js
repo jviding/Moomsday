@@ -38,6 +38,7 @@ var jumpTimer = 0;
 var cursors;
 var jumpButton;
 var shootButton;
+var laserTimer = Date.now();
 var bg;
 
 function create() {
@@ -78,8 +79,8 @@ function update() {
         player.die(game);
     }
 
-    if (shootButton.isDown) {
-            //this.laserTimer = game.time.now;
+    if (shootButton.isDown && Date.now() > laserTimer + 500) {
+            laserTimer = Date.now();
             player.shootLaser(game);
     }
 
