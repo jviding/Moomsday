@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="32" height="64" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" name="tiles" tilewidth="32" tileheight="32">
+  <image source="../img/tilet.png" width="256" height="192"/>
+ </tileset>
+ <layer name="Background Layer" width="32" height="64">
+  <data encoding="base64" compression="zlib">
+   eJzt07EKgDAMBNBOTk79/491cXCItghNFN6Dm+8IpDUAAAAAAID1+iXVKjb0INX9mRvu+rM2PPVnbBj1f+EvZlVurryT7n90b0FWdY+69jMz//8mkQM9FwVB
+  </data>
+ </layer>
+ <layer name="Main Layer" width="32" height="64">
+  <data encoding="base64" compression="zlib">
+   eJzt1MsKwjAQQNGmxm0X/f+PtS4CRSYxk3mIcAdmU5BzaRO37X+nXvv8od0mu6EKz7IaJDurYWRHN8zYUQ0a27thxfZqsNjWBg97tcHT1jY8Auw2Oz4+Pj4+Pj4+Pj4+Pj4+Pj4+/rXltqM5lTvr33/zrUEzq+/fq8Hy/T0arOfP2uBx/i0NXvfv3XAG+tp71bbX2jb7/+fzW2X60jnJ8ntnNMMf3Y8ZP8qOnlX7ELYErWS9AH8YBCk=
+  </data>
+ </layer>
+ <objectgroup name="Object Layer 1" width="32" height="64">
+  <object name="player" type="player" x="255" y="1982">
+   <ellipse/>
+  </object>
+ </objectgroup>
+</map>

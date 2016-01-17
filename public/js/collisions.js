@@ -2,6 +2,12 @@ function setCollisions(game, player, mapLayer) {
 	game.physics.arcade.collide(player.sprite, mapLayer);
     game.physics.arcade.collide(player.sprite, game.levelObstacles);
 
+    game.physics.arcade.collide(game.playerGibs, mapLayer);
+    game.physics.arcade.collide(game.playerGibs, game.levelObstacles);
+
+    game.physics.arcade.collide(game.playerHeadGibs, mapLayer);
+    game.physics.arcade.collide(game.playerHeadGibs, game.levelObstacles);
+
     game.physics.arcade.collide(game.moomins, mapLayer);
     game.physics.arcade.collide(game.moomins, game.levelObstacles);
 
@@ -9,10 +15,12 @@ function setCollisions(game, player, mapLayer) {
     game.physics.arcade.collide(game.moominGibs, game.levelObstacles);
 
     game.physics.arcade.collide(game.enemyBullets, mapLayer, game.killBullets, null, game);
-        
-    game.physics.arcade.overlap(game.moomins, player.sprite, game.moominTouchPlayer, null, game);
+    //game.physics.arcade.overlap(this.enemyBullets, this.player.sprite, this.bulletHitPlayer, null, this);
 
-    /*game.moomins.update();
-    game.enemyBullets.update();
-    game.moominGibs.update();*/
+    game.physics.arcade.overlap(player.sprite, game.moomins, player.moominTouchPlayer, null, game);
+    //game.physics.arcade.overlap(this.player.sprite, this.powerups, this.playerTouchPowerup, null, this);
+
+    //game.moomins.update();
+    //game.enemyBullets.update();
+    //game.moominGibs.update();
 };

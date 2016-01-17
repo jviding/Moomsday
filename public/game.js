@@ -12,8 +12,11 @@ var lastEmit = Date.now();
 function preload() {
     game.load.image('testiKuva', 'assets/img/shite.png');
     game.load.image('laser', 'assets/img/laaseri.png');
+    game.load.image('elamapalkki', 'assets/img/elamapalkki.png');
+    game.load.image('elamapalkki_tayte', 'assets/img/elamapalkki_tayte.png');
     game.load.tilemap('map', 'assets/maps/map.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.tilemap('map', 'assets/maps/map.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.spritesheet('burana', 'assets/img/burana.png', 31, 9);
     game.load.spritesheet('player', 'assets/img/sankari.png', 23, 31);
     game.load.spritesheet('tiles', 'assets/img/tilet.png', 32, 32);
     game.load.spritesheet('tiles', 'assets/img/tilet.png', 32, 32);
@@ -27,12 +30,14 @@ var map;
 var tileset;
 var layer;
 var player;
+var moomins;
 var allPlayers = [];
 var allPlayersData = [];
 var facing = 'left';
 var jumpTimer = 0;
 var cursors;
 var jumpButton;
+var shootButton;
 var bg;
 
 function create() {
@@ -46,27 +51,36 @@ function create() {
 
     layer = loadMap(game);
     player = new Player(32, 32, game);
-    moomies(game);
+    game.enemyBullets = game.add.physicsGroup();
+    moomins = moomies(game);
+    setLifeBar(game);
     setPlayerGibs(game);
-    setCollisions(game, player);
+
+    //game.nukeTimer = 0;
 
     socket.emit('join');
 
     cursors = game.input.keyboard.createCursorKeys();
     jumpButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
     dieButton = game.input.keyboard.addKey(Phaser.Keyboard.C);
+    shootButton = game.input.keyboard.addKey(Phaser.Keyboard.X);
 
 }
 
 function update() {
 
-    //game.physics.arcade.collide(game.lasers, game.mapLayer, game.laserMapOverlap, null, game);
-    //game.physics.arcade.overlap(game.lasers, game.moomins, game.laserMoominOverlap, null, game);
+    game.physics.arcade.collide(player.lasers, layer, player.laserMapOverlap, null, game);
+    game.physics.arcade.overlap(player.lasers, game.moomins, player.laserMoominOverlap, null, game);
 
     setCollisions(game, player, layer);
 
     if (dieButton.isDown) {
-        player.die();
+        player.die(game);
+    }
+
+    if (shootButton.isDown) {
+            //this.laserTimer = game.time.now;
+            player.shootLaser(game);
     }
 
     player.sprite.body.velocity.x = 0;

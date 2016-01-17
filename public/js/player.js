@@ -2,7 +2,7 @@ function Player(x, y, game) {
     this.direction = "right";
     
     this.sprite = game.add.sprite(x, y, "player");
-    //this.sprite.anchor.setTo(0.5, 0.5);
+    this.sprite.anchor.setTo(0.5, 0.5);
     
     this.sprite.animations.add("idle", [0], 1, true);
     this.sprite.animations.add("walk", [0,1,2,3], 8, true);
@@ -21,18 +21,17 @@ function Player(x, y, game) {
 }
 
 Player.prototype = {
-    die: function() {
-        var state = game.state.getCurrentState();
+    die: function(game) {
         
-        state.playerGibs.x = this.sprite.x + 16;
-        state.playerGibs.y = this.sprite.y + 16;
+        game.playerGibs.x = this.sprite.x + 16;
+        game.playerGibs.y = this.sprite.y + 16;
         
-        state.playerGibs.start(true, 9000, 0, 20);
+        game.playerGibs.start(true, 9000, 0, 20);
         
         this.sprite.kill();
     },
     
-    shootLaser: function() {
+    shootLaser: function(game) {
         var laser = game.make.sprite(this.sprite.x, this.sprite.y, "laser");
         this.lasers.add(laser);
         
@@ -48,6 +47,10 @@ Player.prototype = {
     
     laserMoominOverlap: function(laser, moomin) {
         laser.kill();
-        moomin.damage(25);
+        moomin.die();
+    },
+
+    moominTouchPlayer: function(player, moomin) {
+        moomin.die();
     }
 };

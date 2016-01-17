@@ -1,9 +1,8 @@
 function moomies(game) {
 	game.moomins = game.add.physicsGroup();
-	game.enemyBullets = game.add.physicsGroup();
 
     for (var i = 0; i < 10; i++) {
-        var moomin = new Moomin(Math.random() * 800, Math.random() * 1000);
+        var moomin = new Moomin(Math.random() * 800, Math.random() * 1000, game);
         game.moomins.add(moomin);
     }
 
@@ -15,4 +14,4 @@ function moomies(game) {
     game.moominGibs.gravity = 800;
     game.moominGibs.angularDrag = 30;
     game.moominGibs.bounce.setTo(0.7, 0.7);
-}
+};
