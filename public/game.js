@@ -131,7 +131,7 @@ function update() {
     }
 
     //location
-    if (Date.now() - lastEmit > 30) {
+    if (Date.now() - lastEmit > 50) {
         socket.emit('player', {'x': player.sprite.x, 'y': player.sprite.y});
         lastEmit = Date.now();
     }

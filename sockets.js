@@ -41,7 +41,7 @@ module.exports = function Sockets(io) {
           players.players.push(value);
         });
         io.emit('update', players);
-      }, 30);
+      }, 50);
 
       //user disconnected
       socket.on('disconnect', function () {
