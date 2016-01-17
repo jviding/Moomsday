@@ -55,6 +55,7 @@ function create() {
     player = new Player(32, 32, game);
     game.enemyBullets = game.add.physicsGroup();
     game.otherPlayers = game.add.physicsGroup();
+    game.moomins = game.add.physicsGroup();
     moomins = moomies(game);
     setLifeBar(game);
     setPlayerGibs(game);
@@ -120,7 +121,8 @@ function update() {
         });
     });
 
-    if (Date.now() - moomSpawn > 500) {
+    if (Date.now() - moomSpawn > 3000) {
+        moomSpawn = Date.now();
         moomies(game);
     }
 
