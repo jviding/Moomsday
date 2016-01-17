@@ -120,6 +120,10 @@ function update() {
         });
     });
 
+    if (Date.now() - moomSpawn > 500) {
+        moomies(game);
+    }
+
     //update players on the screen
     if (Date.now() - lastEmit > 100) {
         allPlayersData.forEach(function (item) {

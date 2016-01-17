@@ -1,7 +1,7 @@
 function moomies(game) {
 	game.moomins = game.add.physicsGroup();
 
-    for (var i = 0; i < 10; i++) {
+    for (var i = 0; i < 5; i++) {
         var moomin = new Moomin(Math.random() * 800, Math.random() * 1000, game);
         game.moomins.add(moomin);
     }

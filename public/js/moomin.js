@@ -48,8 +48,9 @@ Moomin.prototype.die = function() {
     game.moominGibs.x = this.x + 16;
     game.moominGibs.y = this.y + 16;
     game.moominGibs.start(true, 4500, 0, 10);
-    this.kill();
+    //this.kill();
     this.destroyed = true;
+    this.destroy();
 };
 Moomin.prototype.bulletHitMoomin = function() {
     this.die();
