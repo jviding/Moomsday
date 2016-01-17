@@ -9,8 +9,14 @@ module.exports = function Sockets(io) {
       socket.on('join', function () {
         console.log('user connected');
         hashtable.put(socket.id, {'id':socket.id, 'location': {'x': 0, 'y': 0}});
-        io.to(socket.id).emit('get join', {'id':socket.id, 'players':hashtable.size()});
-        socket.broadcast.emit('new player');
+        var allIds = [];
+        hashtable.forEach(function (key, value) {
+          if (key !== socket.id) {
+            allIds.push(key);
+          }
+        });
+        io.to(socket.id).emit('get join', {'id':socket.id, 'players':allIds});
+        socket.broadcast.emit('new player', {'id':socket.id});
       });
 
       //player moves

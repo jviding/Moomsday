@@ -1,4 +1,10 @@
 function setCollisions(game, player, mapLayer) {
+
+    //game.physics.arcade.overlap(player.lasers, game.otherPlayers, player.shootPlayer, null, game);
+
+    game.physics.arcade.collide(player.lasers, layer, player.laserMapOverlap, null, game);
+    game.physics.arcade.overlap(player.lasers, game.moomins, player.laserMoominOverlap, null, game);
+
 	game.physics.arcade.collide(player.sprite, mapLayer);
     game.physics.arcade.collide(player.sprite, game.levelObstacles);
 

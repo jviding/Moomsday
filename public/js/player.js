@@ -52,5 +52,9 @@ Player.prototype = {
 
     moominTouchPlayer: function(player, moomin) {
         moomin.die();
+    },
+
+    shootPlayer: function(player, other) {
+        other.die();
     }
 };

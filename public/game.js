@@ -53,6 +53,7 @@ function create() {
     layer = loadMap(game);
     player = new Player(32, 32, game);
     game.enemyBullets = game.add.physicsGroup();
+    game.otherPlayers = game.add.physicsGroup();
     moomins = moomies(game);
     setLifeBar(game);
     setPlayerGibs(game);
@@ -69,9 +70,6 @@ function create() {
 }
 
 function update() {
-
-    game.physics.arcade.collide(player.lasers, layer, player.laserMapOverlap, null, game);
-    game.physics.arcade.overlap(player.lasers, game.moomins, player.laserMoominOverlap, null, game);
 
     setCollisions(game, player, layer);
 
@@ -113,9 +111,12 @@ function update() {
 
     //update players on the screen
     if (Date.now() - lastEmit > 100) {
-        for (var i=0; i<allPlayers.length; i++) {
-            allPlayers[i].reset(allPlayersData[i].x, allPlayersData[i].y);
-        }
+        allPlayersData.forEach(function (item) {
+            var bob = hashmap.get(item.id);
+            if (bob !== undefined) {
+                bob.update(item.location);
+            }
+        });
     }
 
     //location
@@ -134,30 +135,33 @@ function render () {
 
 }
 
-socket.on('new player', function () {
-    console.log('a player joined');
-    var p = game.add.sprite(32,32,'player');
-    allPlayers.push(p);
+socket.on('new player', function (data) {
+    console.log('a player has joined');
+    var p = new Other(game, data.id);
+    hashmap.set(data.id, p);
+    //game.otherPlayers.add(p);
 });
 
 socket.on('get join', function (data) {
     socketId = data.id;
-    for (var i=data.players-1; i>0; i--) {
-        var p = game.add.sprite(32,32,'player');
-        allPlayers.push(p);
-    }
+    data.players.forEach(function (item) {
+        var p = new Other(game,item,socket);
+        hashmap.set(item,p);
+        //game.otherPlayers.add(p);
+    });
 });
 
 socket.on('update', function (data) {
     allPlayersData = [];
     data['players'].forEach(function (playerData) {
         if (playerData.id !== socketId) {
-            allPlayersData.push(playerData.location);
+            allPlayersData.push(playerData);
         }
     });
 });
-
+// TARVII KORJAUKSEN!
 socket.on('disconnected', function (data) {
     console.log('a player has left');
-    allPlayers.pop().destroy();
+    hashmap.get(data.id).destroy();
+    hashmap.remove(data.id);
 });
