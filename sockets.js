@@ -29,6 +29,11 @@ module.exports = function Sockets(io) {
         }
       });
 
+      //player is hit
+      socket.on('hit', function (data) {
+        io.emit('death', data);
+      });
+
       //update player locations
       setInterval(function() { 
         var players = {'players': []};

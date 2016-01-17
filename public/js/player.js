@@ -28,7 +28,7 @@ Player.prototype = {
         
         game.playerGibs.start(true, 9000, 0, 20);
         
-        this.sprite.kill();
+        this.sprite.reset(32, 32);
     },
     
     shootLaser: function(game) {

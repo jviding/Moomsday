@@ -1,4 +1,4 @@
-function Other(game, moomid, socket) {
+function Other(game, moomid) {
     this.id = moomid;
 
     var state = game.state.getCurrentState();
@@ -24,7 +24,14 @@ Other.prototype.die = function() {
     game.playerGibs.x = this.sprite.x + 16;
     game.playerGibs.y = this.sprite.y + 16;
     game.playerGibs.start(true, 9000, 0, 20);
-    // socketilla emit this.id koska rikki
+    socket.emit('hit', {'id':this.id});
+};
+Other.prototype.checkID = function (id) {
+    if (this.id === id) {
+        game.playerGibs.x = this.sprite.x + 16;
+        game.playerGibs.y = this.sprite.y + 16;
+        game.playerGibs.start(true, 9000, 0, 20);
+    }
 };
 Other.prototype.shoot = function() {
     //this.die();

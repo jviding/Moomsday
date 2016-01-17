@@ -113,6 +113,7 @@ function update() {
     hashmap.forEach(function (other) {
         player.lasers.forEach(function (bom) {
             if (Phaser.Rectangle.intersects(bom.getBounds(), other.sprite.getBounds())) {
+                bom.destroy();
                 other.die();
             };
         });
@@ -148,7 +149,6 @@ socket.on('new player', function (data) {
     console.log('a player has joined');
     var p = new Other(game, data.id);
     hashmap.set(data.id, p);
-    //game.otherPlayers.add(p);
 });
 
 socket.on('get join', function (data) {
@@ -156,7 +156,6 @@ socket.on('get join', function (data) {
     data.players.forEach(function (item) {
         var p = new Other(game,item,socket);
         hashmap.set(item,p);
-        //game.otherPlayers.add(p);
     });
 });
 
@@ -166,6 +165,15 @@ socket.on('update', function (data) {
         if (playerData.id !== socketId) {
             allPlayersData.push(playerData);
         }
+    });
+});
+
+socket.on('death', function (data) {
+    if (data.id === socketId) {
+        player.die(game);
+    }
+    hashmap.forEach(function (item) {
+        item.checkID(data.id);
     });
 });
 
