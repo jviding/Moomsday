@@ -40,6 +40,7 @@ var jumpButton;
 var shootButton;
 var laserTimer = Date.now();
 var bg;
+var moomSpawn = Date.now();
 
 function create() {
 
@@ -130,7 +131,7 @@ function update() {
     }
 
     //location
-    if (Date.now() - lastEmit > 100) {
+    if (Date.now() - lastEmit > 30) {
         socket.emit('player', {'x': player.sprite.x, 'y': player.sprite.y});
         lastEmit = Date.now();
     }
