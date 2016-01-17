@@ -71,7 +71,7 @@ function create() {
 
 function update() {
 
-    setCollisions(game, player, layer);
+    setCollisions(game, player, layer, hashmap);
 
     if (dieButton.isDown) {
         player.die(game);
@@ -108,6 +108,15 @@ function update() {
     {
         player.sprite.body.velocity.y = -280;
     }
+
+    //check if player is hit
+    hashmap.forEach(function (other) {
+        player.lasers.forEach(function (bom) {
+            if (Phaser.Rectangle.intersects(bom.getBounds(), other.sprite.getBounds())) {
+                other.die();
+            };
+        });
+    });
 
     //update players on the screen
     if (Date.now() - lastEmit > 100) {
@@ -159,7 +168,7 @@ socket.on('update', function (data) {
         }
     });
 });
-// TARVII KORJAUKSEN!
+
 socket.on('disconnected', function (data) {
     console.log('a player has left');
     hashmap.get(data.id).destroy();

@@ -1,6 +1,8 @@
 function setCollisions(game, player, mapLayer) {
 
-    //game.physics.arcade.overlap(player.lasers, game.otherPlayers, player.shootPlayer, null, game);
+    //hashmap.forEach(function (value, key) {
+    //    game.physics.arcade.overlap(player.lasers, value, player.shootPlayer, null, game);
+    //});
 
     game.physics.arcade.collide(player.lasers, layer, player.laserMapOverlap, null, game);
     game.physics.arcade.overlap(player.lasers, game.moomins, player.laserMoominOverlap, null, game);

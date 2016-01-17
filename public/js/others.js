@@ -14,8 +14,7 @@ function Other(game, moomid, socket) {
     
     this.sprite.animations.play("idle");
 
-    game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
-    this.sprite.body.collideWorldBounds = true;
+    //game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
 
 };
 
