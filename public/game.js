@@ -126,18 +126,14 @@ function update() {
         moomies(game);
     }
 
-    //update players on the screen
-    if (Date.now() - lastEmit > 100) {
+    //update players on the screen and emit location
+    if (Date.now() - lastEmit > 30) {
         allPlayersData.forEach(function (item) {
             var bob = hashmap.get(item.id);
             if (bob !== undefined) {
                 bob.update(item.location);
             }
         });
-    }
-
-    //location
-    if (Date.now() - lastEmit > 50) {
         socket.emit('player', {'x': player.sprite.x, 'y': player.sprite.y});
         lastEmit = Date.now();
     }
